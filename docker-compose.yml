@@ -1,0 +1,51 @@
+---
+version: '3.3'
+
+networks:
+  default:
+    driver: bridge
+
+services:
+    traefik:
+      image: traefik:2.4
+      container_name: traefik
+      volumes:
+        - ./traefik:/etc/traefik
+        - /var/run/docker.sock:/var/run/docker.sock
+      networks:
+        - default
+      ports:
+        - 80:80
+        - 443:443
+      command:
+        - '--providers.docker=true'
+        - '--providers.docker.exposedByDefault=false'
+        - '--entrypoints.http=true'
+        - '--entrypoints.http.address=:80'
+        - '--entrypoints.http.http.redirections.entrypoint.to=https'
+        - '--entrypoints.http.http.redirections.entrypoint.scheme=https'
+        - '--entrypoints.https=true'
+        - '--entrypoints.https.address=:443'
+        - '--certificatesResolvers.letsencrypt.acme.email=mail@example.com'
+        - '--certificatesResolvers.letsencrypt.acme.storage=/etc/traefik/acme.json'
+        - '--certificatesResolvers.letsencrypt.acme.httpChallenge.entryPoint=http'
+        - '--log=true'
+        - '--log.level=ERROR'
+
+    uptime-kuma:
+      image: louislam/uptime-kuma:1
+      container_name: uptime-kuma
+      networks:
+        - default
+      volumes:
+        - ./uptime-kuma:/app/data
+      ports:
+        - 3001:3001
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.uptime-kuma.rule=Host(`uptime.example.com`)"
+        - "traefik.http.routers.uptime-kuma.entrypoints=https"
+        - "traefik.http.routers.uptime-kuma.tls=true"
+        - "traefik.http.routers.uptime-kuma.tls.certresolver=letsencrypt"
+        - "traefik.http.services.uptime-kuma.loadBalancer.server.port=3001"
+...
