@@ -26,7 +26,7 @@ services:
         - '--entrypoints.http.http.redirections.entrypoint.scheme=https'
         - '--entrypoints.https=true'
         - '--entrypoints.https.address=:443'
-        - '--certificatesResolvers.letsencrypt.acme.email=mail@example.com'
+        - '--certificatesResolvers.letsencrypt.acme.email=mail@example.com' #edit email address
         - '--certificatesResolvers.letsencrypt.acme.storage=/etc/traefik/acme.json'
         - '--certificatesResolvers.letsencrypt.acme.httpChallenge.entryPoint=http'
         - '--log=true'
@@ -43,7 +43,7 @@ services:
         - 3001:3001
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.uptime-kuma.rule=Host(`uptime.example.com`)"
+        - "traefik.http.routers.uptime-kuma.rule=Host(`uptime.example.com`)" #edit domain for host
         - "traefik.http.routers.uptime-kuma.entrypoints=https"
         - "traefik.http.routers.uptime-kuma.tls=true"
         - "traefik.http.routers.uptime-kuma.tls.certresolver=letsencrypt"
